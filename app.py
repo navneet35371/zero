@@ -26,7 +26,7 @@ class StockSearchService(object):
         return get_stock_by_name(q)
 
 if __name__ == "__main__":
-    cherrypy.config.update({'server.socket_port': 4000})
+    cherrypy.config.update({'server.socket_port': int(os.environ.get('PORT', 5000))})
 
     conf = {
         '/': {
