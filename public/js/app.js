@@ -76,7 +76,7 @@ angular
       function getStocks() {
         $scope.promise = $http.get("/stocks").then(function(data) {
           $scope.stocks = data;
-        }).$promise;
+        });
       }
 
       $scope.removeFilter = function() {
