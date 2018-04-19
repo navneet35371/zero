@@ -1,0 +1,134 @@
+<html lang="en" ng-app="demoApp">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Zerodha</title>
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.css">
+    <link href="/static/css/app.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body layout="column">
+
+    <md-toolbar class="md-whiteframe-1dp">
+        <div class="md-toolbar-tools">
+            <div class="md-title">Stocks Bhav data</div>
+        </div>
+    </md-toolbar>
+
+    <md-content laout="column" flex ng-controller="nutritionController">
+
+        <md-card>
+            <md-toolbar class="md-table-toolbar md-default" ng-show="filter.show && !selected.length">
+                <div class="md-toolbar-tools">
+                    <md-icon>search</md-icon>
+                    <form flex name="filter.form">
+                        <input type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="search">
+                    </form>
+                    <md-button class="md-icon-button" ng-click="removeFilter()">
+                        <md-icon>close</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-toolbar class="md-table-toolbar md-default" ng-hide="filter.show">
+                <div class="md-toolbar-tools">
+                    <span>Top 10 Stocks by Top gainers</span>
+                    <div flex></div>
+                    <md-button class="md-icon-button" ng-click="filter.show = true">
+                        <md-icon>filter_list</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
+                <div class="md-toolbar-tools">
+                    <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
+                </div>
+            </md-toolbar>
+
+            <md-table-container>
+                <table md-table  ng-model="selected" md-progress="promise">
+                    <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                        <tr md-row>
+                            <th md-column md-order-by="SC_CODE">
+                                <span>Code</span>
+                            </th>
+                            <th md-column md-order-by="SC_NAME">
+                                <span>Name</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="OPEN" md-desc>
+                                <span>Open</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="HIGH">
+                                <span>High</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="LOW">
+                                <span>Low</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="CLOSE">
+                                <span>Close</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="PREVCLOSE" hide-gt-xs show-gt-md>
+                                <span>PREVCLOSE</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="NO_TRADES" hide-gt-xs show-gt-lg>
+                                <span>No of trades</span>
+                            </th>
+                            <th md-column md-numeric md-order-by="NET_TURNOV" hide-gt-xs show-gt-lg>
+                                <span>Net trunover</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody md-body>
+                        <tr md-row md-select="dessert"  
+                            ng-repeat="stock in stocks.data | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                            <td md-cell>{{stock.SC_CODE}}</td>
+                            <td md-cell ><span ng-bind-html="highlight(stock.SC_NAME, query.filter)"></span>
+                            </td>
+                            <td md-cell>{{stock.OPEN}}</td>
+                            <td md-cell>{{stock.HIGH}}</td>
+                            <td md-cell>{{stock.LOW}}</td>
+                            <td md-cell>{{stock.CLOSE}}</td>
+                            <td md-cell hide-gt-xs show-gt-md>{{stock.PREVCLOSE}}</td>
+                            <td md-cell hide-gt-xs show-gt-lg>{{stock.NO_TRADES}}</td>
+                            <td md-cell hide-gt-xs show-gt-lg>{{stock.NET_TURNOV}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+
+            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{stocks.data.length}}"
+                 ></md-table-pagination>
+        </md-card>
+        <footer layout="column" layout-align="end">
+                <footer-content layout="row" layout-align="start center" layout-wrap>
+                  <div layout="row" layout-align="start center">
+                    <span>Made with&nbsp;</span><md-icon class="material-icons md-18">favorite</md-icon><span>&nbsp;by Navneet suman</span>
+                  </div>
+                  <div layout="row" layout-align="start center">
+                    <a href="https://github.com/navneet35371" target="_blank">GitHub</a>
+                    <a href="https://stackoverflow.com/users/2439751/navneet35371" target="_blank">StackOverflow</a>
+                    <a href="https://www.facebook.com/speed.navneet" target="_blank">Facebook</a>
+                  </div>
+                </footer-content>
+              </footer>
+    </md-content>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script src="https://rawgit.com/daniel-nagy/md-data-table/master/dist/md-data-table.js"></script>
+    <script src="/static/js/app.js"></script>
+
+
+</body>
+
+</html>
