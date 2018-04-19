@@ -14,7 +14,7 @@ import redis
 BSE_URL = 'http://www.bseindia.com/markets/equity/EQReports/BhavCopyDebt.aspx?expandable=3'
 
 def redis_conn():
-    return redis.from_url(os.environ.get("REDIS_URL", 'None'))
+    return redis.Redis.from_url(os.environ.get("REDIS_URL", 'None'),db=1,charset='utf-8', decode_responses=True)
 
 def getBhavCopy():
     bse_page = requests.get(BSE_URL)
@@ -34,8 +34,11 @@ def saveToRedis():
     r = redis_conn()
     r.flushall()
     csv_values = csv.DictReader(open(getBhavCopy(), 'r'))
+    i= 0
     for row in csv_values:
         r.hmset(row['SC_NAME'].rstrip(), dict(row))
+        i+=1
+        print(i)
     r.set('scrape_date',str(datetime.today().date().day))
 
 
@@ -53,6 +56,7 @@ def get_10_stocks():
     r = redis_conn()
     if r.get('scrape_date') != str(datetime.today().date().day):
         saveToRedis()
+    saveToRedis()
     keys = r.keys('*')
     keys.remove('scrape_date')
     for equity in keys:
