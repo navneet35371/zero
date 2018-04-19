@@ -1,5 +1,6 @@
 import csv
 import io
+import os
 import json
 import zipfile
 from collections import OrderedDict
@@ -13,7 +14,7 @@ import redis
 BSE_URL = 'http://www.bseindia.com/markets/equity/EQReports/BhavCopyDebt.aspx?expandable=3'
 
 def redis_conn():
-    return redis.StrictRedis(host='localhost', port=6379, db=0,charset="utf-8", decode_responses=True)
+    return redis.StrictRedis(host=os.environ.get('REDIS_URL', None), port=11479, db=0,charset="utf-8", decode_responses=True, password=os.environ.get('R_PASSWORD', None))
 
 def getBhavCopy():
     bse_page = requests.get(BSE_URL)
